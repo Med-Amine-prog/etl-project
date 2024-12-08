@@ -34,7 +34,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-credentials') {
+                    docker.withRegistry('https://registry.hub.docker.com', '58a00dd7-a0ce-4b1c-8d25-8dab2db1ca94') {
                         docker.image('etl-pipeline:latest').push()
                     }
                 }
