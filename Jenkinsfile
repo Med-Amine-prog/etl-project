@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Med-Amine-prog/etl-project.git'
+                git branch: 'main', url: 'https://github.com/Med-Amine-prog/etl-project.git'
             }
         }
         stage('Install Dependencies') {
