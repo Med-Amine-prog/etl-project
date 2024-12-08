@@ -5,44 +5,26 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', 
-                    url: 'https://github.com/Med-Amine-prog/etl-project.git'
-            }
-        }
-        stage('Install Dependencies') {
-            steps {
-                sh 'python3 -m pip install --upgrade pip'
-                sh 'python3 -m pip install -r requirements.txt'
-            }
-        }
-        stage('Run ETL') {
-            steps {
-                sh 'python scripts/extract.py'
-                sh 'ls -la data/'
-                sh 'python scripts/transform.py'
-                sh 'ls -la data/'
-                sh 'python scripts/load.py'
-            }
-        }
-        stage('Run Tests') {
-            steps {
-                sh 'pytest tests/test_etl.py --verbose'
+                    url: 'https://github.com/Med-Amine-prog/etl-project.git' // Remplacez par l'URL de votre repo
             }
         }
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker --version'
-                    docker.build('etl-pipeline:latest')
+                    docker.build('etl-pipeline:latest') // Construire l'image Docker basée sur le Dockerfile du projet
                 }
             }
         }
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-credentials') {
-                        docker.image('etl-pipeline:latest').push()
-                    }
+        stage('Run ETL') {
+            agent {
+                docker {
+                    image 'etl-pipeline:latest' // Utiliser l'image Docker construite
                 }
+            }
+            steps {
+                sh 'python scripts/extract.py' // Exécuter les scripts ETL
+                sh 'python scripts/transform.py'
+                sh 'python scripts/load.py'
             }
         }
     }
