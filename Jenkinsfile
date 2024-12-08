@@ -1,28 +1,20 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.9'
+        }
+    }
 
     stages {
-        stage('Checkout') {
+        stage('Install Dependencies') {
             steps {
-                git branch: 'main', 
-                    url: 'https://github.com/Med-Amine-prog/etl-project.git' // Remplacez par l'URL de votre repo
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build('etl-pipeline:latest') // Construire l'image Docker basée sur le Dockerfile du projet
-                }
+                sh 'pip install --upgrade pip'
+                sh 'pip install -r requirements.txt'
             }
         }
         stage('Run ETL') {
-            agent {
-                docker {
-                    image 'etl-pipeline:latest' // Utiliser l'image Docker construite
-                }
-            }
             steps {
-                sh 'python scripts/extract.py' // Exécuter les scripts ETL
+                sh 'python scripts/extract.py'
                 sh 'python scripts/transform.py'
                 sh 'python scripts/load.py'
             }
